@@ -69,7 +69,6 @@ public struct Model3DView: ViewRepresentable {
 	// MARK: - Private implementations
 	private func makeView(context: Context) -> SCNView {
 		let view = SCNView()
-		view.autoenablesDefaultLighting = true
 		view.backgroundColor = .clear
 
 		// Framerate
@@ -116,6 +115,8 @@ public struct Model3DView: ViewRepresentable {
 			rotate: context.environment.transform3D.rotation,
 			scale: context.environment.transform3D.scale,
 			translate: context.environment.transform3D.translation)
+
+        coordinator.setLights(settings: context.environment.lighting)
 	}
 }
 
@@ -352,6 +353,23 @@ extension Model3DView {
 			
 			ibl = settings
 		}
+
+        fileprivate func setLights(settings: LightingProperties) {
+            cameraNode.childNodes.forEach { node in
+                if node.light != nil {
+                    node.removeFromParentNode()
+                }
+            }
+
+            view.autoenablesDefaultLighting = settings.lights.isEmpty
+
+            for light in settings.lights {
+                let lightNode = SCNNode()
+                lightNode.light = light
+                lightNode.position = SCNVector3(x: 0, y: 0, z: 0)
+                cameraNode.addChildNode(lightNode)
+            }
+        }
 	}
 }
 
@@ -408,6 +426,7 @@ extension Model3DView {
 }
 
 // MARK: - Developer Tools
+@available(iOS 14, *)
 struct Model3DView_Library: LibraryContentProvider {
 	@LibraryContentBuilder
 	var views: [LibraryItem] {

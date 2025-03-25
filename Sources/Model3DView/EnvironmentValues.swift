@@ -22,6 +22,10 @@ struct Transform3DEnvironmentKey: EnvironmentKey {
 	static var defaultValue = Transform3DProperties()
 }
 
+struct LightingPropertiesKey: EnvironmentKey {
+    static var defaultValue = LightingProperties(lights: [])
+}
+
 // MARK: - Environment values.
 extension EnvironmentValues {
 	var camera: Camera {
@@ -43,4 +47,9 @@ extension EnvironmentValues {
 		get { self[Transform3DEnvironmentKey.self] }
 		set { self[Transform3DEnvironmentKey.self] = newValue }
 	}
+
+    var lighting: LightingProperties {
+        get { self[LightingPropertiesKey.self] }
+        set { self[LightingPropertiesKey.self] = newValue }
+    }
 }
