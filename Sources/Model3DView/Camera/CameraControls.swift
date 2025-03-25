@@ -47,6 +47,7 @@ public struct OrbitControls<C: Camera>: CameraControls {
 	public var maxYaw: Angle
 	public var minZoom: CGFloat
 	public var maxZoom: CGFloat
+    public var zoomEnabled: Bool
 	public private(set) var friction: CGFloat
 
 	private let center: Vector3 = [0, 0, 0]
@@ -73,6 +74,7 @@ public struct OrbitControls<C: Camera>: CameraControls {
 		maxYaw: Angle = .degrees(.infinity),
 		minZoom: CGFloat = 1,
 		maxZoom: CGFloat = 10,
+        zoomEnabled: Bool = true,
 		friction: CGFloat = 0.1
 	) {
 		self.camera = camera
@@ -83,6 +85,7 @@ public struct OrbitControls<C: Camera>: CameraControls {
 		self.maxYaw = maxYaw
 		self.minZoom = minZoom
 		self.maxZoom = maxZoom
+        self.zoomEnabled = zoomEnabled
 		self.friction = clamp(friction, 0.01, 0.99)
 		
 		// TODO: Set initial `rotation` and `zoom` based on the Camera's values.
@@ -117,6 +120,8 @@ public struct OrbitControls<C: Camera>: CameraControls {
 	private var pinchGesture: some Gesture {
 		MagnificationGesture()
 			.onChanged { state in
+                guard zoomEnabled else { return }
+                
 				isAnimating = true
 				velocityZoom = zoomPosition - state
 				zoomPosition = state
